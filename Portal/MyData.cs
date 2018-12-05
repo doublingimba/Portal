@@ -8,8 +8,15 @@ namespace Portal
 {
     class MyData
     {
-        public string name { get; set; }
         public string tag { get; set; }
+        public List<BtnData> datas { get; set; }
+    }
+
+    class BtnData
+    {
+        public string name { get; set; }
         public string path { get; set; }
     }
+
+
 }

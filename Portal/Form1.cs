@@ -24,6 +24,9 @@ namespace Portal
         //初始化
         private void MyInit()
         {
+            //标题显示程序启动时间
+            this.Text += "       开启时间：" + DateTime.Now.ToString();
+
             //加载文件到内存
             string configPath = System.Windows.Forms.Application.StartupPath + "/datas.json";
             if (!File.Exists(configPath))
@@ -32,21 +35,33 @@ namespace Portal
                 FileStream fs = new FileStream(configPath, FileMode.OpenOrCreate, FileAccess.ReadWrite);
                 StreamWriter sw = new StreamWriter(fs, Encoding.UTF8);
                 sw.WriteLine("[");
-                sw.WriteLine("    {");
+                sw.WriteLine("  {");
+                sw.WriteLine("    \"tag\" : \"网站\",");
+                sw.WriteLine("    \"datas\" : [");
+                sw.WriteLine("      {");
                 sw.WriteLine("        \"name\" : \"GitHub\",");
-                sw.WriteLine("        \"tag\" : \"网站\",");
                 sw.WriteLine("        \"path\" : \"https://github.com\"");
-                sw.WriteLine("    },");
-                sw.WriteLine("    {");
+                sw.WriteLine("      }");
+                sw.WriteLine("    ]");
+                sw.WriteLine("  },");
+                sw.WriteLine("  {");
+                sw.WriteLine("    \"tag\" : \"文件夹\",");
+                sw.WriteLine("    \"datas\" : [");
+                sw.WriteLine("      {");
                 sw.WriteLine("        \"name\" : \"C盘\",");
-                sw.WriteLine("        \"tag\" : \"文件夹\",");
                 sw.WriteLine("        \"path\" : \"C:/\"");
-                sw.WriteLine("    },");
-                sw.WriteLine("    {");
+                sw.WriteLine("      }");
+                sw.WriteLine("    ]");
+                sw.WriteLine("  },");
+                sw.WriteLine("  {");
+                sw.WriteLine("    \"tag\" : \"程序\",");
+                sw.WriteLine("    \"datas\" : [");
+                sw.WriteLine("      {");
                 sw.WriteLine("        \"name\" : \"命令行\",");
-                sw.WriteLine("        \"tag\" : \"程序\",");
                 sw.WriteLine("        \"path\" : \"CMD\"");
-                sw.WriteLine("    }");
+                sw.WriteLine("      }");
+                sw.WriteLine("    ]");
+                sw.WriteLine("  }");
                 sw.WriteLine("]");
                 sw.Close();
                 fs.Close();
@@ -61,21 +76,17 @@ namespace Portal
             }
             sr.Close();
 
-            //解析文件,获取数据
+            Console.WriteLine(jsonString);
+
+
+            //解析数据
             List<MyData> itemList = JsonConvert.DeserializeObject<List<MyData>>(jsonString);//所有数据
-            List<string> tags = new List<string>();//所有标签
-            foreach (MyData ele in itemList)
-            {
-                if(!tags.Contains(ele.tag))
-                {
-                    tags.Add(ele.tag);
-                }
-            }
 
             //根据数据生成界面
-            List<FlowLayoutPanel> panels = new List<FlowLayoutPanel>();
-            for (int i = 0; i < tags.Count; i++)
+            for (int i = 0; i < itemList.Count; i++)
             {
+                MyData myData = itemList[i];
+
                 // tabPage1
                 TabPage page = new TabPage();
                 tabControl1.Controls.Add(page);
@@ -83,7 +94,7 @@ namespace Portal
                 page.Name = "tabPage" + i;
                 page.Size = new System.Drawing.Size(425, 194);
                 page.TabIndex = i;
-                page.Text = tags[i];
+                page.Text = myData.tag;
                 page.UseVisualStyleBackColor = true;
 
                 // flowLayoutPanel1
@@ -98,28 +109,30 @@ namespace Portal
                 flowLayout.TabIndex = i;
                 flowLayout.AutoScroll = true;
 
-                panels.Add(flowLayout);
-            }
+                //Button
+                for (int iBtn = 0; iBtn < myData.datas.Count; iBtn++)
+                {
+                    BtnData btnData = myData.datas[iBtn];
 
-            foreach (MyData ele in itemList)
-            {
-                Button btn = new Button();
-                btn.Location = new System.Drawing.Point(3, 3);
-                btn.Name = ele.name;
-                btn.Size = new System.Drawing.Size(77, 44);
-                btn.TabIndex = 0;
-                btn.Text = ele.name;
-                btn.UseVisualStyleBackColor = true;
-                btn.Click += (object sender2, EventArgs e2) => {
-                         System.Diagnostics.Process.Start(ele.path);
-                     };
-                
-                int index = tags.IndexOf(ele.tag);
-                panels[index].Controls.Add(btn);
+                    Button btn = new Button();
+                    btn.Location = new System.Drawing.Point(3, 3);
+                    btn.Name = btnData.name;
+                    btn.Size = new System.Drawing.Size(73, 44);
+                    btn.TabIndex = 0;
+                    btn.Text = btnData.name;
+                    btn.UseVisualStyleBackColor = true;
+                    btn.Click += (object sender2, EventArgs e2) =>
+                    {
+                        System.Diagnostics.Process.Start(btnData.path);
+                    };
+                    
+                    flowLayout.Controls.Add(btn);
+                }
             }
+            
         }
-        
-        
+
+
         private void Form1_Load(object sender, EventArgs e)
         {
             //界面定位到右下角
