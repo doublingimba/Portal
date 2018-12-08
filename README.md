@@ -3,7 +3,8 @@
 自己用的小工具，用来快速打开网站、文件夹、程序。
 
 ---
-**v2**
+**v2**  
+![](https://github.com/world80/data/blob/master/Portal/Portal_v2.png)
 1. 通过配置文件(datas.xml)生成界面里的按钮
 1. 按钮按分类显示在不同页签下
 1. 窗口的标题栏显示程序启动时间
